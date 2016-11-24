@@ -9,6 +9,18 @@ A recruitment exercise for Atlassian Quality Engineering
 * [Exercise 2 – Exploratory Testing](#markdown-header-exercise-2-exploratory-testing)
 * [Submitting the Exercises](#markdown-header-submitting-the-exercises)
 
+#### Answer - Exercise 1 
+
+* The script need clean-environment & setup-environment e.g.: setup database
+* Just refactor framework and add some necessary checkpoints
+* Cucumber is better but not implement
+* `mvn clean install` to run all tests as parallel
+
+#### Answer - Exercise 2
+
+* Please refer to /Exercise2/Exercise 2.pdf
+
+
 ## Introduction
 
 Quality Engineers at Atlassian are our (not so) secret weapon. They not only help teams continually improve the quality of the software they create, but they also help teams do it more efficiently. In short, our Quality Engineers are essential for shipping quality software faster.
