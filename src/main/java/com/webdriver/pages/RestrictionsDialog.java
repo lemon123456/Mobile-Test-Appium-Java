@@ -1,13 +1,13 @@
 package com.webdriver.pages;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-public class RestrictionsDialog {
+import java.util.List;
 
-    private WebDriver driver;
+public class RestrictionsDialog extends BasePage {
+
     @FindBy(className = "select2-arrow")
     private WebElement restrictionArrow;
     @FindBy(css = "button#page-restrictions-dialog-save-button.aui-button")
@@ -20,42 +20,49 @@ public class RestrictionsDialog {
     private WebElement addButton;
     @FindBy(css = "div.select2-result-label")
     private WebElement userDropDown;
+    @FindBy(css = ".restrictions-dialog-option")
+    private List<WebElement> dialogOptions;
+    @FindBy(css = "span.page-restrictions-dialog-explanation")
+    private WebElement permissionInfo;
+    @FindBy(css = ".restrictions-dialog-table .entity-row")
+    private List<WebElement> usersInTable;
+
 
     public RestrictionsDialog(WebDriver driver) {
-        this.driver = driver;
+        super(driver);
     }
 
     public void setNoPermissions() throws InterruptedException {
-        Thread.sleep(1000);
-        restrictionArrow.click();
-        driver.findElements(By.className("restrictions-dialog-option")).get(1).click();
+        WebElement resArrow = basicOperator.waitForElementClickable(restrictionArrow);
+        resArrow.click();
+        dialogOptions.get(1).click();
     }
 
-    public void setEditPermissions() throws InterruptedException {
-        Thread.sleep(2000);
-        restrictionArrow.click();
-        Thread.sleep(1000);
-        driver.findElements(By.className("restrictions-dialog-option")).get(2).click();
+    public void setEditPermissionsByIndex(int index) {
+        WebElement resArrow = basicOperator.waitForElementClickable(restrictionArrow);
+        resArrow.click();
+        basicOperator.waitForElementVisible(userDropDown);
+        dialogOptions.get(index).click();
     }
 
-    public void setViewEditPermissions() throws InterruptedException {
-        Thread.sleep(2000);
-        restrictionArrow.click();
-        Thread.sleep(1000);
-        driver.findElements(By.className("restrictions-dialog-option")).get(3).click();
+    public void checkSelectedPermission(String text) {
+        basicOperator.waitForElementText(permissionInfo, text);
     }
 
-    public void searchUser(String userName) throws InterruptedException {
+    public void searchAndAddUser(String userName) throws InterruptedException {
         try {
             searchTextField.clear();
             searchTextField.sendKeys(userName);
-            Thread.sleep(2000);
+            basicOperator.waitForElementText(userDropDown, userName);
             userDropDown.click();
-            Thread.sleep(1000);
             addButton.click();
         } catch (Exception e) {
             System.err.println("Failed to find user. Error: " + e.getMessage());
         }
+    }
+
+    public void checkUserInTable(String userName) {
+        basicOperator.waitForScript("return $('.restrictions-dialog-table .entity-row').text()", returnResult -> ((String) returnResult).contains(userName));
     }
 
     public void selectApplyButton() {

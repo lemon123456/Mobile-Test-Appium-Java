@@ -4,9 +4,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-public class BlankPage {
+public class BlankPage extends BasePage {
 
-    private WebDriver driver;
     @FindBy(id = "content-title")
     private WebElement titleBar;
     @FindBy(id = "tinymce")
@@ -15,17 +14,21 @@ public class BlankPage {
     private WebElement saveButton;
 
     public BlankPage(WebDriver driver) {
-        this.driver = driver;
+        super(driver);
     }
 
     public void fillTitleBar(String title) {
-        titleBar.click();
-        titleBar.sendKeys(title);
+        WebElement titleField = basicOperator.waitForElementClickable(titleBar);
+        titleField.sendKeys(title);
     }
 
     public void fillBody(String body) {
-        contentBody.click();
-        contentBody.sendKeys(body);
+        WebElement bodyField = basicOperator.waitForElementClickable(contentBody);
+        bodyField.sendKeys(body);
+    }
+
+    public void switchFrame(String frameName) {
+        basicOperator.switchFrame(frameName);
     }
 
     public void selectSaveButton() {

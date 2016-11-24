@@ -1,48 +1,51 @@
 package com.webdriver.tests;
 
 import com.webdriver.pages.BlankPage;
+import com.webdriver.pages.LoginPage;
 import com.webdriver.pages.Navigation;
 import com.webdriver.pages.PublishedPage;
+import com.webdriver.runtimes.TestProperty;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.PageFactory;
 
 import org.junit.Test;
 
 public class CreatePageTest extends TestBase {
+    private String username = TestProperty.getProperty("test", "username");
+    private String password = TestProperty.getProperty("test", "password");
+    long randomString = System.currentTimeMillis();
 
-    // Test the page quick create function in Confluence
+    private LoginPage loginPg;
+    private Navigation navPage;
+    private PublishedPage publishedPage;
+    private BlankPage blankPage;
+
+    //Test the page quick create function in Confluence
     @Test
     public void testCreatePage() throws InterruptedException {
+        loginPg = PageFactory.initElements(driver, LoginPage.class);
+        navPage = PageFactory.initElements(driver, Navigation.class);
+        publishedPage = PageFactory.initElements(driver, PublishedPage.class);
+        blankPage = PageFactory.initElements(driver, BlankPage.class);
 
         // Log In
-        String username = "<add username here>";
-        String password = "<add password here>";
-
-        d.findElement(By.id("username")).sendKeys(username);
-        d.findElement(By.id("password")).sendKeys(password);
-        d.findElement(By.id("login")).click();
-        Thread.sleep(1000);
+        loginPg.setUserInfo(username, password);
+        loginPg.clickLoginButton();
 
         // Go to Create Page
-        Navigation nav = PageFactory.initElements(d, Navigation.class);
-        nav.selectQuickCreateButton();
-        Thread.sleep(1000);
+        navPage.selectQuickCreateButton();
 
         // Add content to the page & save
-        String[] testData = {"test page title", "test page body"};
-        BlankPage page = PageFactory.initElements(d, BlankPage.class);
-        page.fillTitleBar(testData[0]);
-        d.switchTo().frame("wysiwygTextarea_ifr");
-        page.fillBody(testData[1]);
-        d.switchTo().defaultContent();
-        page.selectSaveButton();
-        Thread.sleep(5000);
+        String[] testData = {"test page title" + randomString, "test page body" + randomString};
+        blankPage.fillTitleBar(testData[0]);
+        blankPage.switchFrame("wysiwygTextarea_ifr");
+        blankPage.fillBody(testData[1]);
+        blankPage.switchFrame("default");
+        blankPage.selectSaveButton();
 
         // Check the page
-        PublishedPage newPage = PageFactory.initElements(d, PublishedPage.class);
-        newPage.validatePageCreated(testData);
-        newPage.validateCommentBoxExists();
-
+        publishedPage.validatePageCreated(testData);
+        publishedPage.validateCommentBoxExists();
     }
 
 

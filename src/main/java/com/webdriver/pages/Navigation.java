@@ -1,13 +1,11 @@
 package com.webdriver.pages;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-public class Navigation {
+public class Navigation extends BasePage {
 
-    private WebDriver driver;
     @FindBy(id = "quick-create-page-button")
     private WebElement quickCreateButton;
     @FindBy(id = "create-page-button")
@@ -24,9 +22,11 @@ public class Navigation {
     private WebElement userManagementLink;
     @FindBy(xpath = "(/html//li[@class=\"grouping RecentlyUpdatedContent_grouping_1vX\"]/div/ul/li/div/div/a)[2]")
     private WebElement existingPage;
+    @FindBy(css = "button:contains('Return to log in page')")
+    private WebElement returnLoginPageLink;
 
     public Navigation(WebDriver driver) {
-        this.driver = driver;
+        super(driver);
     }
 
     public void navigateToUserManagement() {
@@ -35,7 +35,8 @@ public class Navigation {
     }
 
     public void selectQuickCreateButton() {
-        quickCreateButton.click();
+        WebElement quickButton = basicOperator.waitForElementClickable(quickCreateButton);
+        quickButton.click();
     }
 
     public void selectCreateButton() {
@@ -43,13 +44,14 @@ public class Navigation {
     }
 
     public void openExistingPage() {
-        existingPage.click();
+        WebElement existingPg = basicOperator.waitForElementClickable(existingPage);
+        existingPg.click();
     }
 
     public void logOut() {
         navMenuLink.click();
         logoutLink.click();
         logoutButton.click();
-        driver.findElement(By.xpath("//button[contains(text(), \"Return to log in page\")]")).click();
+        returnLoginPageLink.click();
     }
 }

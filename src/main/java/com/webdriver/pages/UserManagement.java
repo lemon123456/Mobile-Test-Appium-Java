@@ -5,9 +5,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-public class UserManagement {
+public class UserManagement extends BasePage {
 
-    private WebDriver driver;
     @FindBy(css = "a.aui-button.back-to-product")
     private WebElement backToProductButton;
     @FindBy(name = "names")
@@ -34,7 +33,7 @@ public class UserManagement {
     private WebElement deleteUserConfirmButton;
 
     public UserManagement(WebDriver driver) {
-        this.driver = driver;
+        super(driver);
     }
 
     // only works if there are less than 5 users in the userbase
@@ -68,7 +67,8 @@ public class UserManagement {
     }
 
     public void returnToProduct() throws InterruptedException {
-        driver.navigate().to(backToProductButton.getAttribute("href"));
+        String url= backToProductButton.getAttribute("href");
+        basicOperator.navigateTo(url);
     }
 
 }

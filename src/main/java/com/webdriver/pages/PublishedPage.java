@@ -6,9 +6,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
-public class PublishedPage {
+public class PublishedPage extends BasePage {
 
-    private WebDriver driver;
     @FindBy(id = "content-metadata-page-restrictions")
     private WebElement restrictionsIcon;
     @FindBy(id = "action-page-permissions-link")
@@ -33,24 +32,31 @@ public class PublishedPage {
     private WebElement menuItemDeletePage;
     @FindBy(id = "confirm")
     private WebElement confirmDelete;
+    @FindBy(css = "#title-text a")
+    private WebElement title;
+    @FindBy(css = "#username")
+    private WebElement user;
+    @FindBy(id = "page-restrictions-dialog-close-button")
+    private WebElement cancelLink;
+
     private String pageTitle = "";
 
     public PublishedPage(WebDriver driver) {
-        this.driver = driver;
+        super(driver);
     }
 
     public void selectRestrictionIcon() {
-        restrictionsIcon.click();
+        WebElement resIcon = basicOperator.waitForElementClickable(restrictionsIcon);
+        resIcon.click();
     }
 
     public void validateCommentBoxExists() throws InterruptedException {
         commentBoxPrompt.click();
-        Thread.sleep(3000);
-        Assert.assertTrue("Comment box is working", commentBoxTextFrame.isDisplayed());
+        basicOperator.waitForElementVisible(commentBoxTextFrame);
     }
 
     public void validatePageShownInTreeView(String PageTitle) {
-        Assert.assertTrue(driver.getCurrentUrl().contains("atlassian.net/wiki/display/"));
+        Assert.assertTrue(basicOperator.getCurrentUrl().contains("atlassian.net/wiki/display/"));
         for (WebElement x : pageTree.findElements(By.tagName("a"))) {
             if (PageTitle == x.getText()) {
                 Assert.assertTrue("New page found", x.getText().contains(pageTitle));
@@ -59,16 +65,18 @@ public class PublishedPage {
         }
     }
 
-    public void validatePageCreated(String[] PageTitle) {
-        if (!driver.getTitle().startsWith(PageTitle[0])) {
+    public void validatePageCreated(String[] PageTitle) throws InterruptedException {
+        basicOperator.waitForElementText(title, pageTitle);
+        if (!basicOperator.getTitle().startsWith(PageTitle[0])) {
             throw new IllegalStateException("Page title does not match expected title");
         } else {
             validatePageShownInTreeView(PageTitle[1]);
         }
     }
 
-    public void deletePage() {
-        menuItemMore.click();
+    public void deletePage() throws InterruptedException {
+        basicOperator.waitForElementClickable(menuItemMore);
+        basicOperator.waitForScript("return $('#action-menu-link')[0].click()", null);
         menuItemDeletePage.click();
         confirmDelete.click();
     }

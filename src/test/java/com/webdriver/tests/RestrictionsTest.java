@@ -1,102 +1,72 @@
 package com.webdriver.tests;
 
-import com.webdriver.pages.PublishedPage;
-import com.webdriver.pages.Navigation;
-import com.webdriver.pages.RestrictionsDialog;
-import org.openqa.selenium.By;
+import com.webdriver.pages.*;
+import com.webdriver.runtimes.TestProperty;
+import org.junit.Before;
 import org.openqa.selenium.support.PageFactory;
 import org.junit.Test;
 
 public class RestrictionsTest extends TestBase {
 
-    private String username = "<add username here>";
-    private String password = "<add password here>";
+    private String username = TestProperty.getProperty("test", "username");
+    private String password = TestProperty.getProperty("test", "password");
+
+    private LoginPage loginPg;
+    private Navigation navPage;
+    private PublishedPage publishedPage;
+    private RestrictionsDialog resDialog;
+    private BlankPage blankPage;
+
+
+    @Before
+    public void setup() {
+        loginPg = PageFactory.initElements(driver, LoginPage.class);
+        navPage = PageFactory.initElements(driver, Navigation.class);
+        publishedPage = PageFactory.initElements(driver, PublishedPage.class);
+        resDialog = PageFactory.initElements(driver, RestrictionsDialog.class);
+        blankPage = PageFactory.initElements(driver, BlankPage.class);
+
+        // Log In
+        loginPg.setUserInfo(username, password);
+        loginPg.clickLoginButton();
+
+        // Open Existing Page
+        navPage.openExistingPage();
+
+        // Open Restrictions Dialog
+        publishedPage.selectRestrictionIcon();
+    }
 
     // Test adding current user to page restrictions
     @Test
-    public void Test1() throws InterruptedException {
-
-        // Log In
-        d.findElement(By.id("username")).sendKeys(username);
-        d.findElement(By.id("password")).sendKeys(password);
-        d.findElement(By.id("login")).click();
-        Thread.sleep(1000);
-
-        // Open Existing Page
-        Navigation nav = PageFactory.initElements(d, Navigation.class);
-        nav.openExistingPage();
-        Thread.sleep(1000);
-
-        // Open Restrictions Dialog
-        PublishedPage page = PageFactory.initElements(d, PublishedPage.class);
-        page.selectRestrictionIcon();
-        Thread.sleep(2000);
-
+    public void CheckEditPermission() throws InterruptedException {
         // Select Restriction Type
-        RestrictionsDialog dialog = PageFactory.initElements(d, RestrictionsDialog.class);
-        dialog.setEditPermissions();
-        dialog.selectCancelButton();
-
+        resDialog.setEditPermissionsByIndex(2);
+        resDialog.checkSelectedPermission("Everyone can view, only some can edit.");
+        resDialog.selectCancelButton();
     }
 
     // Test adding another user to page restrictions
     @Test
-    public void Test2() throws InterruptedException {
-
-        // Log In
-        d.findElement(By.id("username")).sendKeys(username);
-        d.findElement(By.id("password")).sendKeys(password);
-        d.findElement(By.id("login")).click();
-        Thread.sleep(1000);
-
-        // Open Existing Page
-        Navigation nav = PageFactory.initElements(d, Navigation.class);
-        nav.openExistingPage();
-        Thread.sleep(1000);
-
-        // Open Restrictions Dialog
-        PublishedPage page = PageFactory.initElements(d, PublishedPage.class);
-        page.selectRestrictionIcon();
-        Thread.sleep(1000);
-
+    public void CheckUserAdded() throws InterruptedException {
         // Select Restriction Type
-        RestrictionsDialog dialog = PageFactory.initElements(d, RestrictionsDialog.class);
-        dialog.setViewEditPermissions();
-        dialog.searchUser("System Administrator");
-        dialog.selectCancelButton();
-
+        String userName = "System Administrator";
+        resDialog.setEditPermissionsByIndex(3);
+        resDialog.searchAndAddUser(userName);
+        resDialog.checkUserInTable("System Administrator");
+        resDialog.selectCancelButton();
     }
 
     // Test adding a group to page restrictions
     @Test
-    public void Test3() throws InterruptedException {
-
-        // Log In
-        d.findElement(By.id("username")).sendKeys(username);
-        d.findElement(By.id("password")).sendKeys(password);
-        d.findElement(By.id("login")).click();
-        Thread.sleep(1000);
-
-        // Open Existing Page
-        Navigation nav = PageFactory.initElements(d, Navigation.class);
-        nav.openExistingPage();
-        Thread.sleep(1000);
-
-        // Open Restrictions Dialog
-        PublishedPage page = PageFactory.initElements(d, PublishedPage.class);
-        page.selectRestrictionIcon();
-        Thread.sleep(1000);
-
+    public void CheckConfluenceUserAndDeletePage() throws InterruptedException {
         // Select Restriction Type
-        RestrictionsDialog dialog = PageFactory.initElements(d, RestrictionsDialog.class);
-        dialog.setViewEditPermissions();
-        dialog.searchUser("confluence-users");
-        dialog.selectCancelButton();
-
+        resDialog.setEditPermissionsByIndex(3);
+        resDialog.searchAndAddUser("confluence-users");
+        resDialog.checkUserInTable("confluence-users");
+        resDialog.selectCancelButton();
         // Remove existing page
-        Thread.sleep(2000);
-        page.deletePage();
-
+        publishedPage.deletePage();
     }
 
 }
