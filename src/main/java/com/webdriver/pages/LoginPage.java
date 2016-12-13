@@ -8,11 +8,11 @@ import org.openqa.selenium.support.FindBy;
  * Created by Liang on 24/11/2016.
  */
 public class LoginPage extends BasePage {
-    @FindBy(id = "username")
+    @FindBy(id = "login_username")
     private WebElement usernameField;
-    @FindBy(id = "password")
+    @FindBy(id = "login_pswd")
     private WebElement passwordField;
-    @FindBy(id = "login")
+    @FindBy(id = "login_button")
     private WebElement loginButton;
 
     public LoginPage(WebDriver driver) {
@@ -20,6 +20,7 @@ public class LoginPage extends BasePage {
     }
 
     public void setUserInfo(String username, String password) {
+        basicOperator.waitForElementVisible(usernameField);
         usernameField.sendKeys(username);
         passwordField.sendKeys(password);
     }
